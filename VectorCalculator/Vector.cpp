@@ -197,6 +197,8 @@ public:
 
 		}
 
+		value = -(value);
+
 		angle_x = value;
 
 	}
@@ -280,7 +282,7 @@ public:
 
 	}
 
-	long double GetAngle() {
+	long double GetRelAngle() {
 
 		return angle_rel_total;
 
@@ -443,6 +445,18 @@ public:
 		tempAngle_y_1 = acos(sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2)) / GetLength()); //Getting the vertical component of the angle of the first vector
 		tempAngle_y_2 = acos(sqrt(pow(OtherVector.GetLengthX(), 2) + pow(OtherVector.GetLengthZ(), 2)) / OtherVector.GetLength()); //Getting the vertical component of the angle of the second vector
 
+		if (signbit(GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the first vector should be negative
+
+			tempAngle_y_1 = -(tempAngle_y_1);
+
+		}
+
+		if (signbit(OtherVector.GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the second vector should be negative
+
+			tempAngle_y_2 = -(tempAngle_y_2);
+
+		}
+
 		angle_x = (180 / M_PI) * (tempAngle_x_2 - tempAngle_x_1); //Assigning the difference between the two horizontal components between the two vectors, and converting it to degrees
 		angle_y = (180 / M_PI) * (tempAngle_y_2 - tempAngle_y_1); //Assigning the difference between the two vertical components between the two vectors, and converting it to degrees
 
@@ -457,12 +471,6 @@ public:
 			}
 
 			angle_x = totalAngle - angle_x; //Subtract angle_x from the maximum (180) angle
-
-		}
-
-		if (OtherVector.GetLengthY() < GetLengthY()) { //Checking whether the vertical component of the difference angle should be negative
-
-			angle_y = -(angle_y);
 
 		}
 

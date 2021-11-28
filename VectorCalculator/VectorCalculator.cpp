@@ -6,7 +6,7 @@ using namespace std;
 
 int main() {
 
-    cout << "Vector Calculator Program (On behalf of COC AST Club)\n";
+    cout << "Vector Calculator Program\n";
     cout << "Author(s): Svarun Soda";
 
     long double input;
@@ -38,7 +38,7 @@ int main() {
     RocketVector.UpdateLengthFromAngle(input);
     RocketVector.UpdateEndPoint();
 
-    cout << "\nRayload Vector:\n";
+    cout << "\nPayload Vector:\n";
     cout << RocketVector.ToString();
 
     cout << "\n";
@@ -86,7 +86,7 @@ int main() {
     cout << ParticleVector.GetAngleY();
     cout << "\n";
     cout << "Total:\n";
-    cout << ParticleVector.GetAngle();
+    cout << ParticleVector.GetRelAngle();
     cout << "\n";
     cout << "---------------------------------------\n\n\n";
 
