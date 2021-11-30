@@ -1,3 +1,6 @@
+//Author(s): Svarun Soda
+//Class: Aerospace & Science Team of College of the Canyons
+
 #include <stdio.h>
 #include "vector.cpp"
 #include <iostream> 
