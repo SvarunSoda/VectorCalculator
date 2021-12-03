@@ -20,29 +20,30 @@ int main() {
 
     Vector RocketVector;
 
-    cout << "Please input the Payload Data.";
+    RocketVector.SetName("Payload");
+    RocketVector.SetPosDegreeStatus(true);
+    cout << "Please input the Payload Data:";
     cout << "\nLongitude (X): ";
     cin >> input;
-    RocketVector.SetStartX(input);
+    RocketVector.SetStartX(input, false);
     cout << "Lattitude (Z): ";
     cin >> input;
-    RocketVector.SetStartZ(input);
+    RocketVector.SetStartZ(input, false);
     cout << "Altitude (Y): ";
     cin >> input;
     RocketVector.SetStartY(input);
     cout << "Horizontal Angle (+-180): ";
     cin >> input;
-    RocketVector.SetAngleX(input);
+    RocketVector.SetAngleX(input, false);
     cout << "Vertical Angle (+-90): ";
     cin >> input;
-    RocketVector.SetAngleY(input);
+    RocketVector.SetAngleY(input, false);
     cout << "Speed: ";
     cin >> input;
-    RocketVector.UpdateLengthFromAngle(input);
+    RocketVector.UpdateComponentsFromLength(input);
     RocketVector.UpdateEndPoint();
 
-    cout << "\nPayload Vector:\n";
-    cout << RocketVector.ToString();
+    cout << RocketVector.ToStringPos();
 
     cout << "\n";
 
@@ -50,52 +51,40 @@ int main() {
 
     Vector ParticleVector;
 
-    cout << "Please input the Particle Vector Data.";
+    ParticleVector.SetName("Particle");
+    ParticleVector.SetPosDegreeStatus(true);
+    cout << "Please input the Particle Vector Data:";
     cout << "\nStart Point X: ";
     cin >> input;
-    ParticleVector.SetStartX(input);
+    ParticleVector.SetStartX(input, false);
     cout << "Start Point Y: ";
     cin >> input;
     ParticleVector.SetStartY(input);
     cout << "Start Point Z: ";
     cin >> input;
-    ParticleVector.SetStartZ(input);
+    ParticleVector.SetStartZ(input, false);
     cout << "End Point X: ";
     cin >> input;
-    ParticleVector.SetEndX(input);
+    ParticleVector.SetEndX(input, false);
     cout << "End Point Y: ";
     cin >> input;
     ParticleVector.SetEndY(input);
     cout << "End Point Z: ";
     cin >> input;
-    ParticleVector.SetEndZ(input);
+    ParticleVector.SetEndZ(input, false);
     ParticleVector.UpdateLengthFromPoints();
 
-    cout << "\nParticle Vector:\n";
-    cout << ParticleVector.ToString();
+    cout << ParticleVector.ToStringPos();
 
-    cout << "\n";
-
-    // CALCULATING THE VECTOR ANGLE
+    // ACQUIRING THE VECTOR DIFFERENCE ANGLE
 
     ParticleVector.UpdateRelAngle(RocketVector);
 
-    cout << "Vector Difference Angles (Particle's Angular Origin with respect to the Payload):\n---------------------------------------";
-    cout << "\n";
-    cout << "Horizontal:\n";
-    cout << ParticleVector.GetAngleX();
-    cout << "\n";
-    cout << "Vertical:\n";
-    cout << ParticleVector.GetAngleY();
-    cout << "\n";
-    cout << "Total:\n";
-    cout << ParticleVector.GetRelAngle();
-    cout << "\n";
-    cout << "---------------------------------------\n\n\n";
+    cout << ParticleVector.ToStringAngle();
 
     // PROGRAM END
 
-    cout << "PROGRAM FINISHED\n\n";
+    cout << "\n\nPROGRAM FINISHED\n\n";
 
     system("pause");
 
