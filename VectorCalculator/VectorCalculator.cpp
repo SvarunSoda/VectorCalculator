@@ -34,7 +34,7 @@ int main() {
     RocketVector.SetStartY(input);
     cout << "Horizontal Angle (+-180): ";
     cin >> input;
-    RocketVector.SetAngleX(input, false);
+    RocketVector.SetAngleX(input, true, false);
     cout << "Vertical Angle (+-90): ";
     cin >> input;
     RocketVector.SetAngleY(input, false);

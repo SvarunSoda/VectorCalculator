@@ -43,7 +43,11 @@ private:
 
 	long double angle_x = 0;
 	long double angle_y = 0;
+	long double angle_rel_x = 0;
+	long double angle_rel_y = 0;
 	long double angle_rel_total = 0;
+	long double angle_target_x = 0;
+	long double angle_target_y = 0;
 
 	// MISC VARIABLES
 
@@ -225,11 +229,15 @@ public:
 
 	// ANGLE FUNCTIONS
 
-	void SetAngleX(long double value, bool isQuiet) {
+	void SetAngleX(long double value, bool invert, bool isQuiet) {
 
 		value = BoundValueCircular(value, 180, isQuiet); //Bounding the angle by 180 degrees
 
-		value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+		if (invert == true) {
+
+			value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+
+		}
 
 		angle_x = value; //Setting the final horizontal component angle value
 
@@ -243,11 +251,47 @@ public:
 
 	}
 
+	void SetRelAngleX(long double value, bool isQuiet) {
+
+		value = BoundValueCircular(value, 180, isQuiet); //Bounding the relative angle by 180 degrees
+
+		value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+
+		angle_rel_x = value; //Setting the final horizontal component relative angle value
+
+	}
+
+	void SetRelAngleY(long double value, bool isQuiet) {
+
+		value = BoundValueCircular(value, 90, isQuiet); //Bounding the relative angle by 90 degrees
+
+		angle_rel_y = value; //Setting the final vertical component relative angle value
+
+	}
+
 	void SetRelAngle(long double value, bool isQuiet) {
 
 		value = BoundValueSimple(value, 180, isQuiet); //Bounding the angle by 180 degrees
 
 		angle_rel_total = value; //Setting the final total relative angle value
+
+	}
+
+	void SetTargetAngleX(long double value, bool isQuiet) {
+
+		value = BoundValueCircular(value, 180, isQuiet); //Bounding the target angle by 180 degrees
+
+		value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+
+		angle_target_x = value; //Setting the final horizontal component target angle value
+
+	}
+
+	void SetTargetAngleY(long double value, bool isQuiet) {
+
+		value = BoundValueCircular(value, 90, isQuiet); //Bounding the target angle by 90 degrees
+
+		angle_target_y = value; //Setting the final vertical component target angle value
 
 	}
 
@@ -263,9 +307,33 @@ public:
 
 	}
 
+	long double GetRelAngleX() {
+
+		return angle_rel_x;
+
+	}
+
+	long double GetRelAngleY() {
+
+		return angle_rel_y;
+
+	}
+
 	long double GetRelAngle() {
 
 		return angle_rel_total;
+
+	}
+
+	long double GetTargetAngleX() {
+
+		return angle_target_x;
+
+	}
+
+	long double GetTargetAngleY() {
+
+		return angle_target_y;
 
 	}
 
@@ -600,8 +668,8 @@ public:
 
 	}
 
-	//"UpdateRelAngle" updates the angle & it's components based off of the difference between the current vector and a different vector
-	//returns true if the total difference angle is changed, false if the total difference angle remained the same
+	//"UpdateRelAngle" updates the relative angle & it's components based off of the difference between the current vector and a different vector
+	//returns true if the total difference relative angle is changed, false if the total difference relative angle remained the same
 	bool UpdateRelAngle(Vector OtherVector) {
 
 		bool changed = false; //Initializing the change tracker variable
@@ -637,7 +705,7 @@ public:
 		
 		if (OtherVector.GetLengthX() == 0) { //Checking whether there is an X component to the second vector length
 
-			tempAngle_x_2 = M_PI / 2; //If not, assign the maximum possible angle value (90 degrees)
+			tempAngle_x_2 = (M_PI / 2); //If not, assign the maximum possible angle value (90 degrees)
 
 			if (signbit(OtherVector.GetLengthZ()) == 1) { //Checking whether the 90 degree angle should be negative
 
@@ -669,26 +737,148 @@ public:
 
 		}
 
-		SetAngleX((180 / M_PI) * (tempAngle_x_2 - tempAngle_x_1), true); //Assigning the difference between the two horizontal components between the two vectors, and converting it to degrees
-		SetAngleY((180 / M_PI) * (tempAngle_y_2 - tempAngle_y_1), true); //Assigning the difference between the two vertical components between the two vectors, and converting it to degrees
+		SetRelAngleX((180 / M_PI) * (tempAngle_x_2 - tempAngle_x_1), true); //Assigning the difference between the two horizontal components between the two vectors, and converting it to degrees
+		SetRelAngleY((180 / M_PI) * (tempAngle_y_2 - tempAngle_y_1), true); //Assigning the difference between the two vertical components between the two vectors, and converting it to degrees
 
 		if (signbit(GetLengthX()) != signbit(OtherVector.GetLengthX())) { //Checking whether the horizontal component of the angle exceeds +-90 degrees
 
 			int totalAngle = 180; //Maximum possible angle is 180 degrees
 
-			if (signbit(angle_x) == 1) { //Checking whether angle_x is negative
+			if (signbit(GetRelAngleX()) == 1) { //Checking whether angle_x is negative
 
 				totalAngle = -180;
 
 			}
 
-			angle_x = totalAngle - angle_x; //Subtract angle_x from the maximum (180) angle
+			SetRelAngleX(totalAngle - GetRelAngleX(), true); //Subtract angle_x from the maximum (180) angle
 
 		}
 
 		//other_name = OtherVector.GetName(); //Acquiring the name of the other vector
 
 		if (GetRelAngle() != prevAngle) { //Checking whether the total angle was changed
+
+			changed = true;
+
+		}
+
+		return changed; //Returning the change tracker variable
+
+	}
+
+	//"UpdateTargetAngleDirect" updates the target angle components based off of the start points of the current vector and a different vector
+	//returns true if the target angle components were changed, false if the target angle components remained the same
+	bool UpdateTargetAngleDirect(Vector OtherVector) {
+
+		bool changed = false; //Initializing the change tracker variable
+
+		if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+
+			return changed; //Returning the change tracker variable
+
+		}
+
+		long double prevAngleX = GetTargetAngleX(); //Initializing the store variable for the X component of the target angle value
+		long double prevAngleY = GetTargetAngleY(); //Initializing the store variable for the Y component of the target angle value
+
+		long double distX = OtherVector.GetStartX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+		long double distY = OtherVector.GetStartY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+		long double distZ = OtherVector.GetStartZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+
+		if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+
+			if (signbit(distX) == 1) {
+			
+				SetTargetAngleX(-90, true);
+			
+			} else {
+
+				SetTargetAngleX(90, true);
+
+			}
+
+		} else {
+
+			SetTargetAngleX((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
+
+		}
+
+		long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+		long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+
+		SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+		if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+
+			SetTargetAngleY(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+		} else {
+
+			SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true);
+
+		}
+
+		if ((GetTargetAngleX() != prevAngleX) || (GetTargetAngleY() != prevAngleY)) { //Checking whether the target angle components were changed
+
+			changed = true;
+
+		}
+
+		return changed; //Returning the change tracker variable
+
+	}
+
+	//"UpdateTargetAnglePredictive" updates the target angle components based off of the start points of the current vector and the end points of the different vector
+	//returns true if the target angle components were changed, false if the target angle components remained the same
+	bool UpdateTargetAnglePredictive(Vector OtherVector) {
+
+		bool changed = false; //Initializing the change tracker variable
+
+		if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+
+			return changed; //Returning the change tracker variable
+
+		}
+
+		long double prevAngleX = GetTargetAngleX(); //Initializing the store variable for the X component of the target angle value
+		long double prevAngleY = GetTargetAngleY(); //Initializing the store variable for the Y component of the target angle value
+
+		long double distX = OtherVector.GetEndX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+		long double distY = OtherVector.GetEndY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+		long double distZ = OtherVector.GetEndZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+
+		if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+
+			if (signbit(distX) == 1) {
+
+				SetTargetAngleX(-90, true);
+
+			} else {
+
+				SetTargetAngleX(90, true);
+
+			}
+
+		} else {
+
+			SetTargetAngleX((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
+
+		}
+
+		long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+		long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+
+		if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+
+			SetTargetAngleY(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+		} else {
+
+			SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true);
+
+		}
+
+		if ((GetTargetAngleX() != prevAngleX) || (GetTargetAngleY() != prevAngleY)) { //Checking whether the target angle components were changed
 
 			changed = true;
 
