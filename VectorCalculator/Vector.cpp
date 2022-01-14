@@ -16,911 +16,873 @@ using namespace std;
 
 class Vector {
 
-//// VARIABLES START ////
+    //// VARIABLES START ////
 
 private:
 
-	// START POINT COORDINATES VARIABLES
+    // START POINT COORDINATES VARIABLES
 
-	long double x1 = 0;
-	long double y1 = 0;
-	long double z1 = 0;
+    double x1 = 0;
+    double y1 = 0;
+    double z1 = 0;
 
-	// END POINT COORDINATES VARIABLES
+    // END POINT COORDINATES VARIABLES
 
-	long double x2 = 0;
-	long double y2 = 0;
-	long double z2 = 0;
-	
-	// LENGTH VARIABLES
+    double x2 = 0;
+    double y2 = 0;
+    double z2 = 0;
 
-	long double length_x = 0;
-	long double length_y = 0;
-	long double length_z = 0;
-	long double length_total = 0;
+    // LENGTH VARIABLES
 
-	// ANGLE VARIABLES
+    double length_x = 0;
+    double length_y = 0;
+    double length_z = 0;
+    double length_total = 0;
 
-	long double angle_x = 0;
-	long double angle_y = 0;
-	long double angle_rel_x = 0;
-	long double angle_rel_y = 0;
-	long double angle_rel_total = 0;
-	long double angle_target_x = 0;
-	long double angle_target_y = 0;
+    // ANGLE VARIABLES
 
-	// MISC VARIABLES
+    double angle_roll = 0;
+    double angle_pitch = 0;
+    double angle_yaw = 0;
+    double angle_rel_yaw = 0;
+    double angle_rel_pitch = 0;
+    double angle_rel_total = 0;
+    double angle_target_yaw = 0;
+    double angle_target_pitch = 0;
 
-	std::string name = "";
-	std::string other_name = "";
-	bool is_pos_degrees = false;
-	long double mass = 0;
-	long double acceleration = 0;
-	long double fuel = 0;
-	long double radius = 0;
+    // MISC VARIABLES
 
-//// VARIABLES END ////
+    std::string name = "";
+    std::string other_name = "";
+    double mass = 0;
+    double acceleration = 0;
+    double fuel = 0;
+    double radius = 0;
+    bool is_pos_degrees = false;
+    bool particle_hit = false;
+    bool debug_enabled = false;
 
-//// FUNCTIONS START ////
+    //// VARIABLES END ////
+
+    //// FUNCTIONS START ////
 
 public:
 
-	// START POINT FUNCTIONS
+    // START POINT FUNCTIONS
 
-	void SetStartX(long double value, bool isQuiet) {
+    void SetStartX(double value, bool isQuiet) {
 
-		if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
+        if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
 
-			value = BoundValueCircular(value, 180, isQuiet); //If so, bounding the position by 180 degrees
+            value = BoundValueCircular(value, 180, isQuiet); //If so, bounding the position by 180 degrees
 
-		}
+        }
 
-		x1 = value;
+        x1 = value;
 
-	}
+    }
 
-	void SetStartY(long double value) {
+    void SetStartY(double value) {
 
-		/*if (signbit(value) == 1) { //Checking if the current Y position component of the vector is negative
+        /*if (signbit(value) == 1) { //Checking if the current Y position component of the vector is negative
+          value = 0; //If so, changing it to 0
+          if (isQuiet == false) {
+            cout << "Entered Y component of the start point value is negative, changed to 0.\n";
+          }
+        }*/
 
-			value = 0; //If so, changing it to 0
+        y1 = value;
 
-			if (isQuiet == false) {
+    }
 
-				cout << "Entered Y component of the start point value is negative, changed to 0.\n";
+    void SetStartZ(double value, bool isQuiet) {
 
-			}
+        if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
 
-		}*/
+            value = BoundValueCircular(value, 90, isQuiet); //If so, bounding the position by 90 degrees
 
-		y1 = value;
+        }
 
-	}
+        z1 = value;
 
-	void SetStartZ(long double value, bool isQuiet) {
+    }
 
-		if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
+    double GetStartX() {
 
-			value = BoundValueCircular(value, 90, isQuiet); //If so, bounding the position by 90 degrees
+        return x1;
 
-		}
+    }
 
-		z1 = value;
+    double GetStartY() {
 
-	}
+        return y1;
 
-	long double GetStartX() {
+    }
 
-		return x1;
+    double GetStartZ() {
 
-	}
+        return z1;
 
-	long double GetStartY() {
+    }
 
-		return y1;
+    // END POINT FUNCTIONS
 
-	}
+    void SetEndX(double value, bool isQuiet) {
 
-	long double GetStartZ() {
+        if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
 
-		return z1;
-	
-	}
+            value = BoundValueCircular(value, 180, isQuiet); //If so, bounding the position by 180 degrees
 
-	// END POINT FUNCTIONS
+        }
 
-	void SetEndX(long double value, bool isQuiet) {
+        x2 = value;
 
-		if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
+    }
 
-			value = BoundValueCircular(value, 180, isQuiet); //If so, bounding the position by 180 degrees
+    void SetEndY(double value) {
 
-		}
+        y2 = value;
 
-		x2 = value;
+    }
 
-	}
+    void SetEndZ(double value, bool isQuiet) {
 
-	void SetEndY(long double value) {
+        if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
 
-		y2 = value;
+            value = BoundValueCircular(value, 90, isQuiet); //If so, bounding the position by 90 degrees
 
-	}
+        }
 
-	void SetEndZ(long double value, bool isQuiet) {
+        z2 = value;
 
-		if (GetPosDegreeStatus() == true) { //Checking whether the value should be normalized to a Longitude-Lattitude system
+    }
 
-			value = BoundValueCircular(value, 90, isQuiet); //If so, bounding the position by 90 degrees
+    double GetEndX() {
 
-		}
+        return x2;
 
-		z2 = value;
+    }
 
-	}
+    double GetEndY() {
 
-	long double GetEndX() {
+        return y2;
 
-		return x2;
+    }
 
-	}
+    double GetEndZ() {
 
-	long double GetEndY() {
+        return z2;
 
-		return y2;
+    }
 
-	}
+    // LENGTH FUNCTIONS
 
-	long double GetEndZ() {
+    void SetLength(double value) {
 
-		return z2;
+        length_total = value;
 
-	}
+    }
 
-	// LENGTH FUNCTIONS
+    void SetLengthX(double value) {
 
-	void SetLength(long double value) {
+        length_x = value;
 
-		length_total = value;
+    }
 
-	}
+    void SetLengthY(double value) {
 
-	void SetLengthX(long double value) {
+        length_y = value;
 
-		length_x = value;
+    }
 
-	}
+    void SetLengthZ(double value) {
 
-	void SetLengthY(long double value) {
+        length_z = value;
 
-		length_y = value;
+    }
 
-	}
+    double GetLengthX() {
 
-	void SetLengthZ(long double value) {
+        return length_x;
 
-		length_z = value;
+    }
 
-	}
+    double GetLengthY() {
 
-	long double GetLengthX() {
+        return length_y;
 
-		return length_x;
+    }
 
-	}
+    double GetLengthZ() {
 
-	long double GetLengthY() {
+        return length_z;
 
-		return length_y;
+    }
 
-	}
+    double GetLength() {
 
-	long double GetLengthZ() {
+        return length_total;
 
-		return length_z;
+    }
 
-	}
+    // ANGLE FUNCTIONS
 
-	long double GetLength() {
+    void SetAngleRoll(double value, bool isQuiet) {
 
-		return length_total;
+        value = BoundValueCircular(value, 180, isQuiet); //Bounding the angle by 180 degrees
 
-	}
+        angle_roll = value; //Setting the final roll component angle value
 
-	// ANGLE FUNCTIONS
+    }
 
-	void SetAngleX(long double value, bool invert, bool isQuiet) {
+    void SetAnglePitch(double value, bool isQuiet) {
 
-		value = BoundValueCircular(value, 180, isQuiet); //Bounding the angle by 180 degrees
+        value = BoundValueCircular(value, 90, isQuiet); //Bounding the angle by 90 degrees
 
-		if (invert == true) {
+        angle_pitch = value; //Setting the final pitch component angle value
 
-			value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+    }
 
-		}
+    void SetAngleYaw(double value, bool invert, bool isQuiet) {
 
-		angle_x = value; //Setting the final horizontal component angle value
+        value = BoundValueCircular(value, 90, isQuiet); //Bounding the angle by 90 degrees
 
-	}
+        if (invert == true) {
 
-	void SetAngleY(long double value, bool isQuiet) {
+            value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
 
-		value = BoundValueCircular(value, 90, isQuiet); //Bounding the angle by 90 degrees
+        }
 
-		angle_y = value; //Setting the final vertical component angle value
+        angle_yaw = value; //Setting the final yaw component angle value
 
-	}
+    }
 
-	void SetRelAngleX(long double value, bool isQuiet) {
+    void SetRelAnglePitch(double value, bool isQuiet) {
 
-		value = BoundValueCircular(value, 180, isQuiet); //Bounding the relative angle by 180 degrees
+        value = BoundValueCircular(value, 90, isQuiet); //Bounding the relative angle by 90 degrees
 
-		value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+        angle_rel_pitch = value; //Setting the final pitch component relative angle value
 
-		angle_rel_x = value; //Setting the final horizontal component relative angle value
+    }
 
-	}
+    void SetRelAngleYaw(double value, bool isQuiet) {
 
-	void SetRelAngleY(long double value, bool isQuiet) {
+        value = BoundValueCircular(value, 180, isQuiet); //Bounding the relative angle by 180 degrees
 
-		value = BoundValueCircular(value, 90, isQuiet); //Bounding the relative angle by 90 degrees
+        value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
 
-		angle_rel_y = value; //Setting the final vertical component relative angle value
+        angle_rel_yaw = value; //Setting the final yaw component relative angle value
 
-	}
+    }
 
-	void SetRelAngle(long double value, bool isQuiet) {
+    void SetRelAngle(double value, bool isQuiet) {
 
-		value = BoundValueSimple(value, 180, isQuiet); //Bounding the angle by 180 degrees
+        value = BoundValueSimple(value, 180, isQuiet); //Bounding the angle by 180 degrees
 
-		angle_rel_total = value; //Setting the final total relative angle value
+        angle_rel_total = value; //Setting the final total relative angle value
 
-	}
+    }
 
-	void SetTargetAngleX(long double value, bool isQuiet) {
+    void SetTargetAnglePitch(double value, bool isQuiet) {
 
-		value = BoundValueCircular(value, 180, isQuiet); //Bounding the target angle by 180 degrees
+        value = BoundValueCircular(value, 90, isQuiet); //Bounding the target angle by 90 degrees
 
-		value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
+        angle_target_pitch = value; //Setting the final pitch component target angle value
 
-		angle_target_x = value; //Setting the final horizontal component target angle value
+    }
 
-	}
+    void SetTargetAngleYaw(double value, bool isQuiet) {
 
-	void SetTargetAngleY(long double value, bool isQuiet) {
+        value = BoundValueCircular(value, 180, isQuiet); //Bounding the target angle by 180 degrees
 
-		value = BoundValueCircular(value, 90, isQuiet); //Bounding the target angle by 90 degrees
+        value = -(value); //Final invert (because the unit circle values have to be converted for later processing)
 
-		angle_target_y = value; //Setting the final vertical component target angle value
+        angle_target_yaw = value; //Setting the final yaw component target angle value
 
-	}
+    }
 
-	long double GetAngleX() {
+    double GetAngleRoll() {
 
-		return angle_x;
+        return angle_roll;
 
-	}
+    }
 
-	long double GetAngleY() {
+    double GetAnglePitch() {
 
-		return angle_y;
+        return angle_pitch;
 
-	}
+    }
 
-	long double GetRelAngleX() {
+    double GetAngleYaw() {
 
-		return angle_rel_x;
+        return angle_yaw;
 
-	}
+    }
 
-	long double GetRelAngleY() {
+    double GetRelAnglePitch() {
 
-		return angle_rel_y;
+        return angle_rel_pitch;
 
-	}
+    }
 
-	long double GetRelAngle() {
+    double GetRelAngleYaw() {
 
-		return angle_rel_total;
+        return angle_rel_yaw;
 
-	}
+    }
 
-	long double GetTargetAngleX() {
+    double GetRelAngle() {
 
-		return angle_target_x;
+        return angle_rel_total;
 
-	}
+    }
 
-	long double GetTargetAngleY() {
+    double GetTargetAnglePitch() {
 
-		return angle_target_y;
+        return angle_target_pitch;
 
-	}
+    }
 
-	// MISC FUNCTIONS
+    double GetTargetAngleYaw() {
 
-	void SetName(std::string input) {
+        return angle_target_yaw;
 
-		name = input;
+    }
 
-	}
+    // MISC FUNCTIONS
 
-	void SetOtherName(std::string input) {
+    void SetName(std::string input) {
 
-		other_name = input;
+        name = input;
 
-	}
+    }
 
-	void SetPosDegreeStatus(bool input) {
+    void SetOtherName(std::string input) {
 
-		is_pos_degrees = input;
+        other_name = input;
 
-	}
+    }
 
-	void SetMass(long double value) {
+    void SetPosDegreeStatus(bool input) {
 
-		mass = value;
+        is_pos_degrees = input;
 
-	}
+    }
 
-	void SetAccel(long double value) {
+    void SetMass(double value) {
 
-		acceleration = value;
+        mass = value;
 
-	}
+    }
 
-	void SetFuel(long double value) {
+    void SetAccel(double value) {
 
-		fuel = value;
+        acceleration = value;
 
-	}
+    }
 
-	void SetRadius(long double value) {
+    void SetFuel(double value) {
 
-		radius = value;
+        fuel = value;
 
-	}
+    }
 
-	std::string GetName() {
+    void SetRadius(double value) {
 
-		return name;
+        radius = value;
 
-	}
+    }
 
-	std::string GetOtherName() {
+    void SetDebugStatus(bool input) {
 
-		return other_name;
+        debug_enabled = input;
 
-	}
+    }
 
-	bool GetPosDegreeStatus() {
+    std::string GetName() {
 
-		return is_pos_degrees;
+        return name;
 
-	}
+    }
 
-	long double GetMass() {
+    std::string GetOtherName() {
 
-		return mass;
+        return other_name;
 
-	}
+    }
 
-	long double GetAccel() {
+    bool GetPosDegreeStatus() {
 
-		return acceleration;
+        return is_pos_degrees;
 
-	}
+    }
 
-	long double GetFuel() {
+    double GetMass() {
 
-		return fuel;
+        return mass;
 
-	}
+    }
 
-	long double GetRadius() {
+    double GetAccel() {
 
-		return radius;
+        return acceleration;
 
-	}
+    }
 
-	// UPDATER FUNCTIONS
+    double GetFuel() {
 
-	//"UpdateLengthFromPoints" updates the length of the vector given the start and end points values
-	//returns true if the length is changed, false if the length remained the same
-	bool UpdateLengthFromPoints() {
+        return fuel;
 
-		bool changed = false; //Initializing the change tracker variable
+    }
 
-		long double prevLength = GetLength(); //Initializing the store variable for the original length value
+    double GetRadius() {
 
-		SetLengthX(GetEndX() - GetStartX()); //Assigning the X component of the vector's length
-		SetLengthY(GetEndY() - GetStartY()); //Assigning the Y component of the vector's length
-		SetLengthZ(GetEndZ() - GetStartZ()); //Assigning the Z component of the vector's length
+        return radius;
 
-		SetLength(sqrt(pow(GetLengthX(), 2) + pow(GetLengthY(), 2) + pow(GetLengthZ(), 2))); //Assigning the result of the 3D distance formula to the total length variable
+    }
 
-		if (GetLength() != prevLength) { //Checking whether the distance was changed
+    bool GetDebugStatus() {
 
-			changed = true;
+        return debug_enabled;
 
-		}
+    }
 
-		return changed; //Returning the change tracker variable
+    // UPDATER FUNCTIONS
 
-	}
+    //"UpdateLengthFromPoints" updates the length of the vector given the start and end points values
+    //returns true if the length is changed, false if the length remained the same
+    bool UpdateLengthFromPoints() {
 
-	//"UpdateComponentsFromLength" updates the length of the vector given the angles and start points of the payload
-	//returns true if the length components have changed, false if the length components remained the same
-	bool UpdateComponentsFromLength(long double length) {
+        bool changed = false; //Initializing the change tracker variable
 
-		bool changed = false; //Initializing the change tracker variable
+        double prevLength = GetLength(); //Initializing the store variable for the original length value
 
-		long double prevLength_x = GetLengthX(); //Initializing the store variable for the original length X component value
-		long double prevLength_y = GetLengthY(); //Initializing the store variable for the original length Y component value
-		long double prevLength_z = GetLengthZ(); //Initializing the store variable for the original length Z component value
+        SetLengthX(GetEndX() - GetStartX()); //Assigning the X component of the vector's length
+        SetLengthY(GetEndY() - GetStartY()); //Assigning the Y component of the vector's length
+        SetLengthZ(GetEndZ() - GetStartZ()); //Assigning the Z component of the vector's length
 
-		SetLength(length); //Setting the inputted total length value
+        SetLength(sqrt(pow(GetLengthX(), 2) + pow(GetLengthY(), 2) + pow(GetLengthZ(), 2))); //Assigning the result of the 3D distance formula to the total length variable
 
-		SetLengthY(GetLength() * (sin((M_PI / 180) * GetAngleY()))); //Acquiring the Y component of the length using the appropriate trig function and the angle converted to radians
-		SetLengthX((GetLength() * cos((M_PI / 180) * GetAngleY())) * (sin((M_PI / 180) * GetAngleX()))); //Acquiring the X component of the length using the appropriate trig function and the angle converted to radians
-		SetLengthZ((GetLength() * cos((M_PI / 180) * GetAngleY())) * (cos((M_PI / 180) * GetAngleX()))); //Acquiring the Z component of the length using the appropriate trig function and the angle converted to radians
-		
-		if ((GetLengthX() != prevLength_x) || (GetLengthY() != prevLength_y) || (GetLengthZ() != prevLength_z)) { //Checking whether the distance values were changed
+        if (GetLength() != prevLength) { //Checking whether the distance was changed
 
-			changed = true;
+            changed = true;
 
-		}
+        }
 
-		return changed; //Returning the change tracker variable
+        return changed; //Returning the change tracker variable
 
-	}
+    }
 
-	//"UpdateLengthFromComponents" updates the length of the vector given the length components
-	//returns true if the length has changed, false if the length remained the same
-	bool UpdateLengthFromComponents(long double lengthX, long double lengthY, long double lengthZ) {
+    //"UpdateComponentsFromLength" updates the length of the vector given the angles and start points of the payload
+    //returns true if the length components have changed, false if the length components remained the same
+    bool UpdateComponentsFromLength(double length) {
 
-		bool changed = false; //Initializing the change tracker variable
+        bool changed = false; //Initializing the change tracker variable
 
-		long double prevLength = GetLength(); //Initializing the store variable for the original length value
+        double prevLength_x = GetLengthX(); //Initializing the store variable for the original length X component value
+        double prevLength_y = GetLengthY(); //Initializing the store variable for the original length Y component value
+        double prevLength_z = GetLengthZ(); //Initializing the store variable for the original length Z component value
 
-		SetLengthX(lengthX); //Setting the X component of the length
-		SetLengthY(lengthY); //Setting the Y component of the length
-		SetLengthZ(lengthZ); //Setting the Z component of the length
+        SetLength(length); //Setting the inputted total length value
 
-		SetLength(sqrt(pow(GetLengthX(), 2) + pow(GetLengthY(), 2) + pow(GetLengthZ(), 2))); //Assigning the result of the 3D distance formula to the total length variable
+        SetLengthY(GetLength() * (sin((M_PI / 180) * GetAnglePitch()))); //Acquiring the Y component of the length using the appropriate trig function and the angle converted to radians
+        SetLengthX((GetLength() * cos((M_PI / 180) * GetAnglePitch())) * (sin((M_PI / 180) * GetAngleYaw()))); //Acquiring the X component of the length using the appropriate trig function and the angle converted to radians
+        SetLengthZ((GetLength() * cos((M_PI / 180) * GetAnglePitch())) * (cos((M_PI / 180) * GetAngleYaw()))); //Acquiring the Z component of the length using the appropriate trig function and the angle converted to radians
 
-		if (GetLength() != prevLength) { //Checking whether the distance value was changed
+        if ((GetLengthX() != prevLength_x) || (GetLengthY() != prevLength_y) || (GetLengthZ() != prevLength_z)) { //Checking whether the distance values were changed
 
-			changed = true;
+            changed = true;
 
-		}
+        }
 
-		return changed; //Returning the change tracker variable
+        return changed; //Returning the change tracker variable
 
-	}
+    }
 
-	//"UpdateLengthFromComponent" updates the length components of the vector given a single component of the new length and the current angle
-	//returns true if the length components have changed, false if the length components remained the same
-	bool UpdateLengthFromComponent(std::string component, long double length) {
+    //"UpdateLengthFromComponents" updates the length of the vector given the length components
+    //returns true if the length has changed, false if the length remained the same
+    bool UpdateLengthFromComponents(double lengthX, double lengthY, double lengthZ) {
 
-		bool changed = false; //Initializing the change tracker variable
+        bool changed = false; //Initializing the change tracker variable
 
-		long double prevLength_x = GetLengthX(); //Initializing the store variable for the original length X component value
-		long double prevLength_y = GetLengthY(); //Initializing the store variable for the original length Y component value
-		long double prevLength_z = GetLengthZ(); //Initializing the store variable for the original length Z component value
+        double prevLength = GetLength(); //Initializing the store variable for the original length value
 
-		if ((component.compare("X") == 0) || (component.compare("x") == 0)) {
+        SetLengthX(lengthX); //Setting the X component of the length
+        SetLengthY(lengthY); //Setting the Y component of the length
+        SetLengthZ(lengthZ); //Setting the Z component of the length
 
-			if ((GetAngleX() == 0) || (GetAngleX() == 180) || (GetAngleX() == -180)) {
+        SetLength(sqrt(pow(GetLengthX(), 2) + pow(GetLengthY(), 2) + pow(GetLengthZ(), 2))); //Assigning the result of the 3D distance formula to the total length variable
 
-				return changed;
+        if (GetLength() != prevLength) { //Checking whether the distance value was changed
 
-			}
+            changed = true;
 
-			SetLengthX(length);
+        }
 
-			if ((GetAngleX() == 90) || (GetAngleX() == -90)) {
+        return changed; //Returning the change tracker variable
 
-				SetLengthZ(0);
+    }
 
-			} else {
+    //"UpdateLengthFromComponent" updates the length components of the vector given a single component of the new length and the current angle
+    //returns true if the length components have changed, false if the length components remained the same
+    bool UpdateLengthFromComponent(std::string component, double length) {
 
-				SetLengthZ(GetLengthX() / tan((M_PI / 180) * GetAngleX()));
+        bool changed = false; //Initializing the change tracker variable
 
-			}
+        double prevLength_x = GetLengthX(); //Initializing the store variable for the original length X component value
+        double prevLength_y = GetLengthY(); //Initializing the store variable for the original length Y component value
+        double prevLength_z = GetLengthZ(); //Initializing the store variable for the original length Z component value
 
-			long double lengthHorizontal;
+        if ((component.compare("X") == 0) || (component.compare("x") == 0)) {
 
-			if ((GetAngleY() == 90) || (GetAngleY() == -90)) {
+            if ((GetAngleYaw() == 0) || (GetAngleYaw() == 180) || (GetAngleYaw() == -180)) {
 
-				lengthHorizontal = 0;
+                return changed;
 
-			} else {
+            }
 
-				lengthHorizontal = sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2));
+            SetLengthX(length);
 
-				SetLengthY(lengthHorizontal * tan((M_PI / 180) * GetAngleY()));
+            if ((GetAngleYaw() == 90) || (GetAngleYaw() == -90)) {
 
-			}
+                SetLengthZ(0);
 
-			SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
+            }
+            else {
 
-		} else if ((component.compare("Y") == 0) || (component.compare("y") == 0)) {
+                SetLengthZ(GetLengthX() / tan((M_PI / 180) * GetAngleYaw()));
 
-			if (GetAngleY() == 0) {
+            }
 
-				return changed;
+            double lengthHorizontal;
 
-			}
+            if ((GetAnglePitch() == 90) || (GetAnglePitch() == -90)) {
 
-			SetLengthY(length);
+                lengthHorizontal = 0;
 
-			long double lengthHorizontal;
+            }
+            else {
 
-			if ((GetAngleY() == 90) || (GetAngleY() == -90)) {
+                lengthHorizontal = sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2));
 
-				lengthHorizontal = 0;
+                SetLengthY(lengthHorizontal * tan((M_PI / 180) * GetAnglePitch()));
 
-			} else {
+            }
 
-				lengthHorizontal = GetLengthY() / tan((M_PI / 180) * GetAngleY());
+            SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
 
-			}
+        }
+        else if ((component.compare("Y") == 0) || (component.compare("y") == 0)) {
 
-			SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
+            if (GetAnglePitch() == 0) {
 
-			SetLengthX(lengthHorizontal * sin((M_PI / 180) * GetAngleX()));
-			SetLengthZ(lengthHorizontal * cos((M_PI / 180) * GetAngleX()));
+                return changed;
 
-		} else if ((component.compare("Z") == 0) || (component.compare("z") == 0)) {
+            }
 
-			if ((GetAngleX() == 90) || (GetAngleX() == -90)) {
+            SetLengthY(length);
 
-				return changed;
+            double lengthHorizontal;
 
-			}
+            if ((GetAnglePitch() == 90) || (GetAnglePitch() == -90)) {
 
-			SetLengthZ(length);
+                lengthHorizontal = 0;
 
-			if ((GetAngleX() == 0) || (GetAngleX() == 180) || (GetAngleX() == -180)) {
+            }
+            else {
 
-				SetLengthX(0);
+                lengthHorizontal = GetLengthY() / tan((M_PI / 180) * GetAnglePitch());
 
-			} else {
+            }
 
-				SetLengthX(GetLengthZ() * tan((M_PI / 180) * GetAngleX()));
+            SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
 
-			}
+            SetLengthX(lengthHorizontal * sin((M_PI / 180) * GetAngleYaw()));
+            SetLengthZ(lengthHorizontal * cos((M_PI / 180) * GetAngleYaw()));
 
-			long double lengthHorizontal;
+        }
+        else if ((component.compare("Z") == 0) || (component.compare("z") == 0)) {
 
-			if ((GetAngleY() == 90) || (GetAngleY() == -90)) {
+            if ((GetAngleYaw() == 90) || (GetAngleYaw() == -90)) {
 
-				lengthHorizontal = 0;
+                return changed;
 
-			} else {
+            }
 
-				lengthHorizontal = sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2));
+            SetLengthZ(length);
 
-				SetLengthY(lengthHorizontal * tan((M_PI / 180) * GetAngleY()));
+            if ((GetAngleYaw() == 0) || (GetAngleYaw() == 180) || (GetAngleYaw() == -180)) {
 
-			}
+                SetLengthX(0);
 
-			SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
+            }
+            else {
 
-		}
+                SetLengthX(GetLengthZ() * tan((M_PI / 180) * GetAngleYaw()));
 
-		if ((GetLengthX() != prevLength_x) || (GetLengthY() != prevLength_y) || (GetLengthZ() != prevLength_z)) { //Checking whether the distance values were changed
+            }
 
-			changed = true;
+            double lengthHorizontal;
 
-		}
+            if ((GetAnglePitch() == 90) || (GetAnglePitch() == -90)) {
 
-		return changed; //Returning the change tracker variable
+                lengthHorizontal = 0;
 
-	}
+            }
+            else {
 
-	//"UpdateEndPoints" updates the endpoints given the start points and the length values
-	//returns true if the endpoints have changed, false if the endpoints remained the same
-	bool UpdateEndPoint() {
+                lengthHorizontal = sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2));
 
-		bool changed = false; //Initializing the change tracker variable
+                SetLengthY(lengthHorizontal * tan((M_PI / 180) * GetAnglePitch()));
 
-		long double prevx2 = GetEndX(); //Initializing the store variable for the original X component value
-		long double prevy2 = GetEndY(); //Initializing the store variable for the original Y component value
-		long double prevz2 = GetEndZ(); //Initializing the store variable for the original Z component value
+            }
 
-		SetEndX(GetStartX() + GetLengthX(), true); //Assining the X component of the endpoint
-		SetEndY(GetStartY() + GetLengthY()); //Assining the Y component of the endpoint
-		SetEndZ(GetStartZ() + GetLengthZ(), true); //Assining the Z component of the endpoint
+            SetLength(sqrt(pow(lengthHorizontal, 2) + pow(GetLengthY(), 2)));
 
-		if ((GetEndX() != prevx2) || (GetEndY() != prevy2) || (GetEndZ() != prevz2)) { //Checking whether the endpoint was changed
+        }
 
-			changed = true;
+        if ((GetLengthX() != prevLength_x) || (GetLengthY() != prevLength_y) || (GetLengthZ() != prevLength_z)) { //Checking whether the distance values were changed
 
-		}
+            changed = true;
 
-		return changed;
+        }
 
-	}
+        return changed; //Returning the change tracker variable
 
-	//"UpdateEndPoints" updates the start points given the endpoints and the length values
-	//returns true if the start points have changed, false if the start points remained the same
-	bool UpdateStartPoint() {
+    }
 
-		bool changed = false; //Initializing the change tracker variable
+    //"UpdateEndPoints" updates the endpoints given the start points and the length values
+    //returns true if the endpoints have changed, false if the endpoints remained the same
+    bool UpdateEndPoint() {
 
-		long double prevx1 = GetStartX(); //Initializing the store variable for the original X component value
-		long double prevy1 = GetStartY(); //Initializing the store variable for the original Y component value
-		long double prevz1 = GetStartZ(); //Initializing the store variable for the original Z component value
+        bool changed = false; //Initializing the change tracker variable
 
-		SetStartX(GetEndX() - GetLengthX(), true); //Assining the X component of the start point
-		SetStartY(GetEndY() - GetLengthY()); //Assining the Y component of the start point
-		SetStartZ(GetEndZ() - GetLengthZ(), true); //Assining the Z component of the start point
+        double prevx2 = GetEndX(); //Initializing the store variable for the original X component value
+        double prevy2 = GetEndY(); //Initializing the store variable for the original Y component value
+        double prevz2 = GetEndZ(); //Initializing the store variable for the original Z component value
 
-		if ((GetStartX() != prevx1) || (GetStartY() != prevy1) || (GetStartZ() != prevz1)) { //Checking whether the start point was changed
+        SetEndX(GetStartX() + GetLengthX(), true); //Assining the X component of the endpoint
+        SetEndY(GetStartY() + GetLengthY()); //Assining the Y component of the endpoint
+        SetEndZ(GetStartZ() + GetLengthZ(), true); //Assining the Z component of the endpoint
 
-			changed = true;
+        if ((GetEndX() != prevx2) || (GetEndY() != prevy2) || (GetEndZ() != prevz2)) { //Checking whether the endpoint was changed
 
-		}
+            changed = true;
 
-		return changed;
+        }
 
-	}
+        return changed;
 
-	//"UpdateRelAngle" updates the relative angle & it's components based off of the difference between the current vector and a different vector
-	//returns true if the total difference relative angle is changed, false if the total difference relative angle remained the same
-	bool UpdateRelAngle(Vector OtherVector) {
+    }
 
-		bool changed = false; //Initializing the change tracker variable
+    //"UpdateEndPoints" updates the start points given the endpoints and the length values
+    //returns true if the start points have changed, false if the start points remained the same
+    bool UpdateStartPoint() {
 
-		if ((GetLengthX() == 0) && ((GetLengthY() == 0)) && ((GetLengthZ() == 0)) || (OtherVector.GetLengthX() == 0) && ((OtherVector.GetLengthY() == 0)) && ((OtherVector.GetLengthZ() == 0))) { //Checking whether there is a 0 vector
+        bool changed = false; //Initializing the change tracker variable
 
-			return changed;
+        double prevx1 = GetStartX(); //Initializing the store variable for the original X component value
+        double prevy1 = GetStartY(); //Initializing the store variable for the original Y component value
+        double prevz1 = GetStartZ(); //Initializing the store variable for the original Z component value
 
-		}
+        SetStartX(GetEndX() - GetLengthX(), true); //Assining the X component of the start point
+        SetStartY(GetEndY() - GetLengthY()); //Assining the Y component of the start point
+        SetStartZ(GetEndZ() - GetLengthZ(), true); //Assining the Z component of the start point
 
-		long double prevAngle = GetRelAngle(); //Initializing the store variable for the original total angle value
+        if ((GetStartX() != prevx1) || (GetStartY() != prevy1) || (GetStartZ() != prevz1)) { //Checking whether the start point was changed
 
-		SetRelAngle((180 / M_PI) * acos(((GetLengthX() * OtherVector.GetLengthX()) + (GetLengthY() * OtherVector.GetLengthY()) + (GetLengthZ() * OtherVector.GetLengthZ())) / (GetLength() * OtherVector.GetLength())), true); //Assigning the result of the 3D vector angle formula to the total angle variable, converted into degrees
+            changed = true;
 
-		long double tempAngle_x_1; //Initializing the first vector horizontal angle variable
-		long double tempAngle_x_2; //Initializing the second vector horizontal angle variable
-		
-		if (GetLengthX() == 0) { //Checking whether there is an X component to the first vector length
+        }
 
-			tempAngle_x_1 = (M_PI / 2); //If not, assign the maximum possible angle value (90 degrees)
+        return changed;
 
-			if (signbit(GetLengthZ()) == 1) { //Checking whether the 90 degree angle should be negative
+    }
 
-				tempAngle_x_1 = -(M_PI / 2);
+    //"UpdateRelAngle" updates the relative angle & it's components based off of the difference between the current vector and a different vector
+    //returns true if the total difference relative angle is changed, false if the total difference relative angle remained the same
+    bool UpdateRelAngle(Vector OtherVector) {
 
-			}
+        bool changed = false; //Initializing the change tracker variable
 
-		} else {
+        if ((GetLengthX() == 0) && ((GetLengthY() == 0)) && ((GetLengthZ() == 0)) || (OtherVector.GetLengthX() == 0) && ((OtherVector.GetLengthY() == 0)) && ((OtherVector.GetLengthZ() == 0))) { //Checking whether there is a 0 vector
 
-			tempAngle_x_1 = atan(GetLengthZ() / GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of to the angle of the first vector
+            return changed;
 
-		} 
-		
-		if (OtherVector.GetLengthX() == 0) { //Checking whether there is an X component to the second vector length
+        }
 
-			tempAngle_x_2 = (M_PI / 2); //If not, assign the maximum possible angle value (90 degrees)
+        double prevAngle = GetRelAngle(); //Initializing the store variable for the original total angle value
 
-			if (signbit(OtherVector.GetLengthZ()) == 1) { //Checking whether the 90 degree angle should be negative
+        SetRelAngle((180 / M_PI) * acos(((GetLengthX() * OtherVector.GetLengthX()) + (GetLengthY() * OtherVector.GetLengthY()) + (GetLengthZ() * OtherVector.GetLengthZ())) / (GetLength() * OtherVector.GetLength())), true); //Assigning the result of the 3D vector angle formula to the total angle variable, converted into degrees
 
-				tempAngle_x_2 = -(M_PI / 2);
+        double tempAngle_x_1; //Initializing the first vector horizontal angle variable
+        double tempAngle_x_2; //Initializing the second vector horizontal angle variable
 
-			}
+        if (GetLengthX() == 0) { //Checking whether there is an X component to the first vector length
 
-		} else {
+            tempAngle_x_1 = (M_PI / 2); //If not, assign the maximum possible angle value (90 degrees)
 
-			tempAngle_x_2 = atan(OtherVector.GetLengthZ() / OtherVector.GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of the angle of the second vector
+            if (signbit(GetLengthZ()) == 1) { //Checking whether the 90 degree angle should be negative
 
-		}
+                tempAngle_x_1 = -(M_PI / 2);
 
-		long double tempAngle_y_1; //Initializing the first vector vertical angle variable
-		long double tempAngle_y_2; //Initializing the second vector vertical angle variable
+            }
 
-		tempAngle_y_1 = acos(sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2)) / GetLength()); //Getting the vertical component of the angle of the first vector
-		tempAngle_y_2 = acos(sqrt(pow(OtherVector.GetLengthX(), 2) + pow(OtherVector.GetLengthZ(), 2)) / OtherVector.GetLength()); //Getting the vertical component of the angle of the second vector
+        }
+        else {
 
-		if (signbit(GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the first vector should be negative
+            tempAngle_x_1 = atan(GetLengthZ() / GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of to the angle of the first vector
 
-			tempAngle_y_1 = -(tempAngle_y_1);
+        }
 
-		}
+        if (OtherVector.GetLengthX() == 0) { //Checking whether there is an X component to the second vector length
 
-		if (signbit(OtherVector.GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the second vector should be negative
+            tempAngle_x_2 = (M_PI / 2); //If not, assign the maximum possible angle value (90 degrees)
 
-			tempAngle_y_2 = -(tempAngle_y_2);
+            if (signbit(OtherVector.GetLengthZ()) == 1) { //Checking whether the 90 degree angle should be negative
 
-		}
+                tempAngle_x_2 = -(M_PI / 2);
 
-		SetRelAngleX((180 / M_PI) * (tempAngle_x_2 - tempAngle_x_1), true); //Assigning the difference between the two horizontal components between the two vectors, and converting it to degrees
-		SetRelAngleY((180 / M_PI) * (tempAngle_y_2 - tempAngle_y_1), true); //Assigning the difference between the two vertical components between the two vectors, and converting it to degrees
+            }
 
-		if (signbit(GetLengthX()) != signbit(OtherVector.GetLengthX())) { //Checking whether the horizontal component of the angle exceeds +-90 degrees
+        }
+        else {
 
-			int totalAngle = 180; //Maximum possible angle is 180 degrees
+            tempAngle_x_2 = atan(OtherVector.GetLengthZ() / OtherVector.GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of the angle of the second vector
 
-			if (signbit(GetRelAngleX()) == 1) { //Checking whether angle_x is negative
+        }
 
-				totalAngle = -180;
+        double tempAngle_y_1; //Initializing the first vector vertical angle variable
+        double tempAngle_y_2; //Initializing the second vector vertical angle variable
 
-			}
+        tempAngle_y_1 = acos(sqrt(pow(GetLengthX(), 2) + pow(GetLengthZ(), 2)) / GetLength()); //Getting the vertical component of the angle of the first vector
+        tempAngle_y_2 = acos(sqrt(pow(OtherVector.GetLengthX(), 2) + pow(OtherVector.GetLengthZ(), 2)) / OtherVector.GetLength()); //Getting the vertical component of the angle of the second vector
 
-			SetRelAngleX(totalAngle - GetRelAngleX(), true); //Subtract angle_x from the maximum (180) angle
+        if (signbit(GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the first vector should be negative
 
-		}
+            tempAngle_y_1 = -(tempAngle_y_1);
 
-		//other_name = OtherVector.GetName(); //Acquiring the name of the other vector
+        }
 
-		if (GetRelAngle() != prevAngle) { //Checking whether the total angle was changed
+        if (signbit(OtherVector.GetLengthY()) == 1) { //Checking whether the vertical component of the difference angle of the second vector should be negative
 
-			changed = true;
+            tempAngle_y_2 = -(tempAngle_y_2);
 
-		}
+        }
 
-		return changed; //Returning the change tracker variable
+        SetRelAngleYaw((180 / M_PI) * (tempAngle_x_2 - tempAngle_x_1), true); //Assigning the difference between the two horizontal components between the two vectors, and converting it to degrees
+        SetRelAnglePitch((180 / M_PI) * (tempAngle_y_2 - tempAngle_y_1), true); //Assigning the difference between the two vertical components between the two vectors, and converting it to degrees
 
-	}
+        if (signbit(GetLengthX()) != signbit(OtherVector.GetLengthX())) { //Checking whether the horizontal component of the angle exceeds +-90 degrees
 
-	//"UpdateTargetAngleDirect" updates the target angle components based off of the start points of the current vector and a different vector
-	//returns true if the target angle components were changed, false if the target angle components remained the same
-	bool UpdateTargetAngleDirect(Vector OtherVector) {
+            int totalAngle = 180; //Maximum possible angle is 180 degrees
 
-		bool changed = false; //Initializing the change tracker variable
+            if (signbit(GetRelAngleYaw()) == 1) { //Checking whether angle_roll is negative
 
-		if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+                totalAngle = -180;
 
-			return changed; //Returning the change tracker variable
+            }
 
-		}
+            SetRelAngleYaw(totalAngle - GetRelAngleYaw(), true); //Subtract angle_roll from the maximum (180) angle
 
-		long double prevAngleX = GetTargetAngleX(); //Initializing the store variable for the X component of the target angle value
-		long double prevAngleY = GetTargetAngleY(); //Initializing the store variable for the Y component of the target angle value
+        }
 
-		long double distX = OtherVector.GetStartX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
-		long double distY = OtherVector.GetStartY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
-		long double distZ = OtherVector.GetStartZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+        //other_name = OtherVector.GetName(); //Acquiring the name of the other vector
 
-		if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+        if (GetRelAngle() != prevAngle) { //Checking whether the total angle was changed
 
-			if (signbit(distX) == 1) {
-			
-				SetTargetAngleX(-90, true);
-			
-			} else {
+            changed = true;
 
-				SetTargetAngleX(90, true);
+        }
 
-			}
+        return changed; //Returning the change tracker variable
 
-		} else {
+    }
 
-			SetTargetAngleX((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
+    //"MoveVectorByLength" updates the start & end points of the vector by adding the current length values to them
+    //returns true if the start point changed, false if the start point remained the same
+    bool MoveVectorByLength() {
 
-		}
+        bool changed = false; //Initializing the change tracker variable
 
-		long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
-		long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+        double prevx1 = GetStartX(); //Initializing the store variable for the original X component value
+        double prevy1 = GetStartY(); //Initializing the store variable for the original Y component value
+        double prevz1 = GetStartZ(); //Initializing the store variable for the original Z component value
 
-		SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+        if (GetPosDegreeStatus() == true) {
 
-		if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+            SetStartX(GetStartX() + MetricToDegree(GetLengthX(), 180), true); //Moving the X component of the start point by the X component of the length
+            SetStartZ(GetStartZ() + MetricToDegree(GetLengthZ(), 180), true); //Moving the Z component of the start point by the Z component of the length
 
-			SetTargetAngleY(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+        }
+        else {
 
-		} else {
+            SetStartX(GetStartX() + GetLengthX(), true); //Moving the X component of the start point by the X component of the length
+            SetStartZ(GetStartZ() + GetLengthZ(), true); //Moving the Z component of the start point by the Z component of the length
 
-			SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true);
+        }
 
-		}
+        SetStartY(GetStartY() + GetLengthY()); //Moving the Y component of the start point by the Y component of the length
 
-		if ((GetTargetAngleX() != prevAngleX) || (GetTargetAngleY() != prevAngleY)) { //Checking whether the target angle components were changed
+        if ((GetStartX() != prevx1) || (GetStartY() != prevy1) || (GetStartZ() != prevz1)) { //Checking whether the start point was changed
 
-			changed = true;
+            changed = true;
 
-		}
+        }
 
-		return changed; //Returning the change tracker variable
+        return changed;
 
-	}
+    }
 
-	//"UpdateTargetAnglePredictive" updates the target angle components based off of the start points of the current vector and the end points of the different vector
-	//returns true if the target angle components were changed, false if the target angle components remained the same
-	bool UpdateTargetAnglePredictive(Vector OtherVector) {
+    //"RotateVectorEuler" rotates the start and end points of the vector using Matrix methods given a set of Euler angles by which to rotate the vector
+    //returns true if the start and end points were changed, false it the start and end points weren't changed
+    bool RotateVectorEuler(double rotX, double rotY, double rotZ) {
 
-		bool changed = false; //Initializing the change tracker variable
+        bool changed = false;
 
-		if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+        double prevStartX = GetStartX();
+        double prevStartY = GetStartY();
+        double prevStartZ = GetStartZ();
+        double prevEndX = GetEndX();
+        double prevEndY = GetEndY();
+        double prevEndZ = GetEndZ();
 
-			return changed; //Returning the change tracker variable
 
-		}
 
-		long double prevAngleX = GetTargetAngleX(); //Initializing the store variable for the X component of the target angle value
-		long double prevAngleY = GetTargetAngleY(); //Initializing the store variable for the Y component of the target angle value
+        if ((GetStartX() != prevStartX) || (GetStartY() != prevStartY) || (GetStartZ() != prevStartZ) || (GetEndX() != prevEndX) || (GetEndY() != prevEndY) || (GetEndZ() != prevEndZ)) {
 
-		long double distX = OtherVector.GetEndX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
-		long double distY = OtherVector.GetEndY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
-		long double distZ = OtherVector.GetEndZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+            changed = true;
 
-		if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+        }
 
-			if (signbit(distX) == 1) {
+        return changed;
 
-				SetTargetAngleX(-90, true);
+    }
 
-			} else {
+    //"RotateVectorQuaternion" rotates the start and end points of the vector using Matrix methods given a set of Quaternion angles by which to rotate the vector
+    //returns true if the start and end points were changed, false it the start and end points weren't changed
+    bool RotateVectorQuaternion(double rotW, double rotX, double rotY, double rotZ) {
 
-				SetTargetAngleX(90, true);
+        bool changed = false;
 
-			}
+        double prevStartX = GetStartX();
+        double prevStartY = GetStartY();
+        double prevStartZ = GetStartZ();
+        double prevEndX = GetEndX();
+        double prevEndY = GetEndY();
+        double prevEndZ = GetEndZ();
 
-		} else {
 
-			SetTargetAngleX((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
 
-		}
+        if ((GetStartX() != prevStartX) || (GetStartY() != prevStartY) || (GetStartZ() != prevStartZ) || (GetEndX() != prevEndX) || (GetEndY() != prevEndY) || (GetEndZ() != prevEndZ)) {
 
-		long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
-		long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+            changed = true;
 
-		if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+        }
 
-			SetTargetAngleY(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+        return changed;
 
-		} else {
-
-			SetTargetAngleY((180 / M_PI) * acos(distHorizontal / distTotal), true);
-
-		}
-
-		if ((GetTargetAngleX() != prevAngleX) || (GetTargetAngleY() != prevAngleY)) { //Checking whether the target angle components were changed
-
-			changed = true;
-
-		}
-
-		return changed; //Returning the change tracker variable
-
-	}
-
-	//"MoveVectorByLength" updates the start & end points of the vector by adding the current length values to them
-	//returns true if the start point changed, false if the start point remained the same
-	bool MoveVectorByLength() {
-
-		bool changed = false; //Initializing the change tracker variable
-
-		long double prevx1 = GetStartX(); //Initializing the store variable for the original X component value
-		long double prevy1 = GetStartY(); //Initializing the store variable for the original Y component value
-		long double prevz1 = GetStartZ(); //Initializing the store variable for the original Z component value
-
-		if (GetPosDegreeStatus() == true) {
-
-			SetStartX(GetStartX() + MetricToDegree(GetLengthX(), 180), true); //Moving the X component of the start point by the X component of the length
-			SetStartZ(GetStartZ() + MetricToDegree(GetLengthZ(), 180), true); //Moving the Z component of the start point by the Z component of the length
-
-		} else {
-
-			SetStartX(GetStartX() + GetLengthX(), true); //Moving the X component of the start point by the X component of the length
-			SetStartZ(GetStartZ() + GetLengthZ(), true); //Moving the Z component of the start point by the Z component of the length
-
-		}
-
-		SetStartY(GetStartY() + GetLengthY()); //Moving the Y component of the start point by the Y component of the length
-
-		if ((GetStartX() != prevx1) || (GetStartY() != prevy1) || (GetStartZ() != prevz1)) { //Checking whether the start point was changed
-
-			changed = true;
-
-		}
-
-		return changed;
-
-	}
+    }
 
 	// STRING FUNCTIONS
 
@@ -932,7 +894,7 @@ public:
 
 	std::string ToStringAngle() {
 
-		return "\n" + GetName() + " Vector Difference Angles (" + GetName() + "'s Angular Origin with respect to " + GetOtherName() + ")\n--------------------------------------\nHorizontal:\n" + std::to_string(GetAngleX()) + "\nVertical:\n" + std::to_string(GetAngleY()) + "\nTotal:\n" + std::to_string(GetRelAngle()) + "\n---------------------------------------\n";
+		return "\n" + GetName() + " Vector Difference Angles (" + GetName() + "'s Angular Origin with respect to " + GetOtherName() + ")\n--------------------------------------\nHorizontal:\n" + std::to_string(GetAngleYaw()) + "\nVertical:\n" + std::to_string(GetAnglePitch()) + "\nTotal:\n" + std::to_string(GetRelAngle()) + "\n---------------------------------------\n";
 
 	}
 
@@ -944,7 +906,7 @@ public:
 
 	std::string ToStringRocketLiveFeed(long double AccelerationX, long double AccelerationY, long double AccelerationZ, long double TimeElapsed, int ParticleHits) {
 
-		return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\nCurrent position\nLongitude (X): " + std::to_string(GetStartX()) + "\nLattitude (Z): " + std::to_string(GetStartZ()) + "\nAltitude (Y): " + std::to_string(GetStartY()) + "\nCurrent angle\nHorizontal (X): " + std::to_string(GetAngleX()) + "\nVertical (Y): " + std::to_string(GetAngleY()) + "\nTotal: " + std::to_string(GetRelAngle()) + "\nCurrent velocity\nX: " + std::to_string(GetLengthX()) + "\nY: " + std::to_string(GetLengthY()) + "\nZ: " + std::to_string(GetLengthZ()) + "\nSpeed: " + std::to_string(GetLength()) + "\nCurrent acceleration\nX: " + std::to_string(AccelerationX) + "\nY: " + std::to_string(AccelerationY) + "\nZ: " + std::to_string(AccelerationZ) + "\nEngine: " + std::to_string(GetAccel()) + "\nCurrent fuel: " + std::to_string(GetFuel()) + "\nParticle hits: " + std::to_string(ParticleHits) + "\nTime elapsed: " + std::to_string(TimeElapsed) + "\n---------------------------------------\n";
+		return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\nCurrent position\nLongitude (X): " + std::to_string(GetStartX()) + "\nLattitude (Z): " + std::to_string(GetStartZ()) + "\nAltitude (Y): " + std::to_string(GetStartY()) + "\nCurrent angle\nHorizontal (X): " + std::to_string(GetAngleYaw()) + "\nVertical (Y): " + std::to_string(GetAnglePitch()) + "\nTotal: " + std::to_string(GetRelAngle()) + "\nCurrent velocity\nX: " + std::to_string(GetLengthX()) + "\nY: " + std::to_string(GetLengthY()) + "\nZ: " + std::to_string(GetLengthZ()) + "\nSpeed: " + std::to_string(GetLength()) + "\nCurrent acceleration\nX: " + std::to_string(AccelerationX) + "\nY: " + std::to_string(AccelerationY) + "\nZ: " + std::to_string(AccelerationZ) + "\nEngine: " + std::to_string(GetAccel()) + "\nCurrent fuel: " + std::to_string(GetFuel()) + "\nParticle hits: " + std::to_string(ParticleHits) + "\nTime elapsed: " + std::to_string(TimeElapsed) + "\n---------------------------------------\n";
 
 	}
 
@@ -1064,6 +1026,56 @@ public:
 		return bound * (value / ((2 * M_PI * GetRadius()) / (180 / bound)));
 
 	}
+
+    //"CheckQuadrantAngle" provides the quadrant in which the given angle value is located in (in degrees)
+    //returns 1 if the given angle is between 0 and 90 degrees, returns 2 if the given angle is between -90 and 0 degrees, returns 3 if the given angle is between 90 and 180 degrees, returns 4 if the given angle is between -180 and -90 degrees
+    int CheckQuadrantAngle(double angle) {
+
+        angle = BoundValueCircular(angle, 180, true);
+
+        if ((angle < 0) && (angle > -90)) {
+
+            return 2;
+
+        }
+        else if ((angle > 90) && (angle < 180)) {
+
+            return 3;
+
+        }
+        else if ((angle < -90) && (angle > -180)) {
+
+            return 4;
+
+        }
+
+        return 1;
+
+    }
+
+    //"CheckQuadrantCoordinate" provides the quadrant in which the given pair of coordinates is located in
+    //returns 1 if both the first and second coordinates are positive, returns 2 if the first coordinate is negative and the second coordinate is positive, returns 3 if both the first and second coordinates are negative, returns 4 if the first coordinate is positive and the second coordinate is negative
+    int CheckQuadrantCoordinate(double x, double y) {
+
+        if ((x < 0) && (y > 0)) {
+
+            return 2;
+
+        }
+        else if ((x < 90) && (y < 0)) {
+
+            return 3;
+
+        }
+        else if ((x > 0) && (y < 0)) {
+
+            return 4;
+
+        }
+
+        return 1;
+
+    }
 
 //// FUNCTIONS END ////
 
