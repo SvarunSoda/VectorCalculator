@@ -798,6 +798,134 @@ public:
         return changed; //Returning the change tracker variable
 
     }
+    
+    //"UpdateTargetAngleDirect" updates the target angle components based off of the start points of the current vector and a different vector
+    //returns true if the target angle components were changed, false if the target angle components remained the same
+    bool UpdateTargetAngleDirect(Vector OtherVector) {
+
+        bool changed = false; //Initializing the change tracker variable
+
+        if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+
+            return changed; //Returning the change tracker variable
+
+        }
+
+        long double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
+        long double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
+
+        long double distX = OtherVector.GetStartX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+        long double distY = OtherVector.GetStartY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+        long double distZ = OtherVector.GetStartZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+
+        if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+
+            if (signbit(distX) == 1) {
+
+                SetTargetAngleYaw(-90, true);
+
+            }
+            else {
+
+                SetTargetAngleYaw(90, true);
+
+            }
+
+        }
+        else {
+
+            SetTargetAngleYaw((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
+
+        }
+
+        long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+        long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+
+        SetTargetAnglePitch((180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+        if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+
+            SetTargetAnglePitch(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+        }
+        else {
+
+            SetTargetAnglePitch((180 / M_PI) * acos(distHorizontal / distTotal), true);
+
+        }
+
+        if ((GetTargetAngleYaw() != prevAngleX) || (GetTargetAnglePitch() != prevAngleY)) { //Checking whether the target angle components were changed
+
+            changed = true;
+
+        }
+
+        return changed; //Returning the change tracker variable
+
+    }
+
+    //"UpdateTargetAnglePredictive" updates the target angle components based off of the start points of the current vector and the end points of the different vector
+    //returns true if the target angle components were changed, false if the target angle components remained the same
+    bool UpdateTargetAnglePredictive(Vector OtherVector) {
+
+        bool changed = false; //Initializing the change tracker variable
+
+        if ((GetStartX() == OtherVector.GetStartX()) && (GetStartY() == OtherVector.GetStartY()) && (GetStartZ() == OtherVector.GetStartZ())) {
+
+            return changed; //Returning the change tracker variable
+
+        }
+
+        long double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
+        long double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
+
+        long double distX = OtherVector.GetEndX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+        long double distY = OtherVector.GetEndY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+        long double distZ = OtherVector.GetEndZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+
+        if (distZ == 0) { //Taking the limit of the X component of the difference target angle
+
+            if (signbit(distX) == 1) {
+
+                SetTargetAngleYaw(-90, true);
+
+            }
+            else {
+
+                SetTargetAngleYaw(90, true);
+
+            }
+
+        }
+        else {
+
+            SetTargetAngleYaw((180 / M_PI) * atan(distZ / distX), true); //Setting the calculated horizontal component target angle from the X and Z components of the distance
+
+        }
+
+        long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+        long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+
+        if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
+
+            SetTargetAnglePitch(-(180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
+
+        }
+        else {
+
+            SetTargetAnglePitch((180 / M_PI) * acos(distHorizontal / distTotal), true);
+
+        }
+
+        if ((GetTargetAngleYaw() != prevAngleX) || (GetTargetAnglePitch() != prevAngleY)) { //Checking whether the target angle components were changed
+
+            changed = true;
+
+        }
+
+        return changed; //Returning the change tracker variable
+
+    }
 
     //"MoveVectorByLength" updates the start & end points of the vector by adding the current length values to them
     //returns true if the start point changed, false if the start point remained the same
