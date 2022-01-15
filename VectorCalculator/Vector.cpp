@@ -8,13 +8,14 @@
 #include <sstream>
 #include <math.h>
 #include <iostream> 
+#include <vector>
 #define M_PI           3.14159265358979323846
 
 using namespace std;
 
 //// VECTOR OBJECT START ////
 
-class Vector {
+class Vector3D {
 
     //// VARIABLES START ////
 
@@ -651,8 +652,8 @@ public:
 
     }
 
-    //"UpdateEndPoints" updates the endpoints given the start points and the length values
-    //returns true if the endpoints have changed, false if the endpoints remained the same
+    //"UpdateEndPoint" updates the endpoint given the start point and the length values
+    //returns true if the endpoint has changed, false if the endpoint remained the same
     bool UpdateEndPoint() {
 
         bool changed = false; //Initializing the change tracker variable
@@ -675,8 +676,8 @@ public:
 
     }
 
-    //"UpdateEndPoints" updates the start points given the endpoints and the length values
-    //returns true if the start points have changed, false if the start points remained the same
+    //"UpdateEndPoint" updates the start point given the endpoint and the length values
+    //returns true if the start point has changed, false if the start point remained the same
     bool UpdateStartPoint() {
 
         bool changed = false; //Initializing the change tracker variable
@@ -701,7 +702,7 @@ public:
 
     //"UpdateRelAngle" updates the relative angle & it's components based off of the difference between the current vector and a different vector
     //returns true if the total difference relative angle is changed, false if the total difference relative angle remained the same
-    bool UpdateRelAngle(Vector OtherVector) {
+    bool UpdateRelAngle(Vector3D OtherVector) {
 
         bool changed = false; //Initializing the change tracker variable
 
@@ -728,8 +729,7 @@ public:
 
             }
 
-        }
-        else {
+        } else {
 
             tempAngle_x_1 = atan(GetLengthZ() / GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of to the angle of the first vector
 
@@ -745,8 +745,7 @@ public:
 
             }
 
-        }
-        else {
+        } else {
 
             tempAngle_x_2 = atan(OtherVector.GetLengthZ() / OtherVector.GetLengthX()); //Else, assign the result appropriate trig expression to the horizontal component of the angle of the second vector
 
@@ -801,7 +800,7 @@ public:
     
     //"UpdateTargetAngleDirect" updates the target angle components based off of the start points of the current vector and a different vector
     //returns true if the target angle components were changed, false if the target angle components remained the same
-    bool UpdateTargetAngleDirect(Vector OtherVector) {
+    bool UpdateTargetAngleDirect(Vector3D OtherVector) {
 
         bool changed = false; //Initializing the change tracker variable
 
@@ -811,12 +810,12 @@ public:
 
         }
 
-        long double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
-        long double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
+        double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
+        double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
 
-        long double distX = OtherVector.GetStartX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
-        long double distY = OtherVector.GetStartY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
-        long double distZ = OtherVector.GetStartZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+        double distX = OtherVector.GetStartX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+        double distY = OtherVector.GetStartY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+        double distZ = OtherVector.GetStartZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
 
         if (distZ == 0) { //Taking the limit of the X component of the difference target angle
 
@@ -838,8 +837,8 @@ public:
 
         }
 
-        long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
-        long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+        double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+        double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
 
         SetTargetAnglePitch((180 / M_PI) * acos(distHorizontal / distTotal), true); //Setting the calculated vertical component of the target angle from the horizontal and Y distance components
 
@@ -866,7 +865,7 @@ public:
 
     //"UpdateTargetAnglePredictive" updates the target angle components based off of the start points of the current vector and the end points of the different vector
     //returns true if the target angle components were changed, false if the target angle components remained the same
-    bool UpdateTargetAnglePredictive(Vector OtherVector) {
+    bool UpdateTargetAnglePredictive(Vector3D OtherVector) {
 
         bool changed = false; //Initializing the change tracker variable
 
@@ -876,12 +875,12 @@ public:
 
         }
 
-        long double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
-        long double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
+        double prevAngleX = GetTargetAngleYaw(); //Initializing the store variable for the X component of the target angle value
+        double prevAngleY = GetTargetAnglePitch(); //Initializing the store variable for the Y component of the target angle value
 
-        long double distX = OtherVector.GetEndX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
-        long double distY = OtherVector.GetEndY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
-        long double distZ = OtherVector.GetEndZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
+        double distX = OtherVector.GetEndX() - GetStartX(); //Acquiring the X component of the distance between the start points of the two vectors
+        double distY = OtherVector.GetEndY() - GetStartY(); //Acquiring the Y component of the distance between the start points of the two vectors
+        double distZ = OtherVector.GetEndZ() - GetStartZ(); //Acquiring the Z component of the distance between the start points of the two vectors
 
         if (distZ == 0) { //Taking the limit of the X component of the difference target angle
 
@@ -903,8 +902,8 @@ public:
 
         }
 
-        long double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
-        long double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
+        double distHorizontal = sqrt(pow(distX, 2) + pow(distZ, 2)); //Acquring the horizontal component of the distance
+        double distTotal = sqrt(pow(distHorizontal, 2) + pow(distY, 2)); //Acquiring the total distance
 
         if (signbit(distY) == 1) { //Checking whether the vertical component of the target angle should be negative
 
@@ -975,7 +974,57 @@ public:
         double prevEndY = GetEndY();
         double prevEndZ = GetEndZ();
 
+        rotX = rotX * (M_PI / 180);
+        rotY = rotY * (M_PI / 180);
+        rotZ = rotZ * (M_PI / 180);
 
+        std::vector<vector<double>> initialStartMatrix {
+
+            {prevStartX},
+            {prevStartY},
+            {prevStartZ}
+
+        };
+        std::vector<vector<double>> initialEndMatrix{
+
+            {prevEndX},
+            {prevEndY},
+            {prevEndZ}
+
+        };
+
+        std::vector<vector<double>> multMatrixX {
+
+            {1, 0, 0},
+            {0, cos(rotX), -sin(rotX)},
+            {0, sin(rotX), cos(rotX)}
+
+        };
+        std::vector<vector<double>> multMatrixY {
+
+            {cos(rotY), 0, sin(rotY)},
+            {0, 1, 0},
+            {-sin(rotY), 0, cos(rotY)}
+
+        };
+        std::vector<vector<double>> multMatrixZ {
+
+            {cos(rotZ), -sin(rotZ), 0},
+            {sin(rotZ), cos(rotZ), 0},
+            {0, 0, 1}
+
+        };
+
+        std::vector<vector<double>> finalStartMatrix = MultiplyMatrices(MultiplyMatrices(MultiplyMatrices(initialStartMatrix, multMatrixX, 3, 3), multMatrixY, 3, 3), multMatrixZ, 3, 3);
+        std::vector<vector<double>> finalEndMatrix = MultiplyMatrices(MultiplyMatrices(MultiplyMatrices(initialEndMatrix, multMatrixX, 3, 3), multMatrixY, 3, 3), multMatrixZ, 3, 3);
+
+        SetStartX(finalStartMatrix[0][0], true);
+        SetStartY(finalStartMatrix[1][0]);
+        SetStartZ(finalStartMatrix[2][0], true);
+
+        SetEndX(finalEndMatrix[0][0], true);
+        SetEndY(finalEndMatrix[1][0]);
+        SetEndZ(finalEndMatrix[2][0], true);
 
         if ((GetStartX() != prevStartX) || (GetStartY() != prevStartY) || (GetStartZ() != prevStartZ) || (GetEndX() != prevEndX) || (GetEndY() != prevEndY) || (GetEndZ() != prevEndZ)) {
 
@@ -1022,7 +1071,7 @@ public:
 
 	std::string ToStringAngle() {
 
-		return "\n" + GetName() + " Vector Difference Angles (" + GetName() + "'s Angular Origin with respect to " + GetOtherName() + ")\n--------------------------------------\nHorizontal:\n" + std::to_string(GetAngleYaw()) + "\nVertical:\n" + std::to_string(GetAnglePitch()) + "\nTotal:\n" + std::to_string(GetRelAngle()) + "\n---------------------------------------\n";
+		return "\n" + GetName() + " Vector Angles\n--------------------------------------\nRoll:\n" + std::to_string(GetAngleRoll()) + "\nPitch:\n" + std::to_string(GetAnglePitch()) + "\nYaw:\n" + std::to_string(GetAngleYaw()) + "\nRelative Angles (with respect to " + GetOtherName() + ")\nRelative Pitch : \n" + std::to_string(GetRelAnglePitch()) + "\nRelative Yaw : \n" + std::to_string(GetRelAngleYaw()) + "\nRelative Total : \n" + std::to_string(GetRelAngle()) + "\n--------------------------------------- \n";
 
 	}
 
@@ -1032,17 +1081,23 @@ public:
 
 	}
 
-	std::string ToStringRocketLiveFeed(long double AccelerationX, long double AccelerationY, long double AccelerationZ, long double TimeElapsed, int ParticleHits) {
+	std::string ToStringRocketLiveFeed(double AccelerationX, double AccelerationY, double AccelerationZ, double TimeElapsed, int ParticleHits) {
 
 		return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\nCurrent position\nLongitude (X): " + std::to_string(GetStartX()) + "\nLattitude (Z): " + std::to_string(GetStartZ()) + "\nAltitude (Y): " + std::to_string(GetStartY()) + "\nCurrent angle\nHorizontal (X): " + std::to_string(GetAngleYaw()) + "\nVertical (Y): " + std::to_string(GetAnglePitch()) + "\nTotal: " + std::to_string(GetRelAngle()) + "\nCurrent velocity\nX: " + std::to_string(GetLengthX()) + "\nY: " + std::to_string(GetLengthY()) + "\nZ: " + std::to_string(GetLengthZ()) + "\nSpeed: " + std::to_string(GetLength()) + "\nCurrent acceleration\nX: " + std::to_string(AccelerationX) + "\nY: " + std::to_string(AccelerationY) + "\nZ: " + std::to_string(AccelerationZ) + "\nEngine: " + std::to_string(GetAccel()) + "\nCurrent fuel: " + std::to_string(GetFuel()) + "\nParticle hits: " + std::to_string(ParticleHits) + "\nTime elapsed: " + std::to_string(TimeElapsed) + "\n---------------------------------------\n";
 
 	}
 
+    std::string ToStringRadarLiveFeed(double CurrentRotation, double CurrentRotationSpeed, double TimeElapsed) {
+
+        return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\n-- Positional Values --\nStart point\nX: " + std::to_string(GetStartX()) + " Y: " + std::to_string(GetStartY()) + " Z: " + std::to_string(GetStartZ()) + "\nEnd point\nX: " + std::to_string(GetEndX()) + " Y: " + std::to_string(GetEndY()) + " Z: " + std::to_string(GetEndZ()) + "\nLength: " + std::to_string(GetLength()) + "\n-- Angular Values --\nCurrent Rotational Position: " + std::to_string(CurrentRotation) + "\nCurrent Rotational Speed: " + std::to_string(CurrentRotationSpeed) + "\nRoll:\n" + std::to_string(GetAngleRoll()) + "\nPitch:\n" + std::to_string(GetAnglePitch()) + "\nYaw:\n" + std::to_string(GetAngleYaw()) + "\n-- Relative Angular Values (with respect to " + GetOtherName() + ") --\nRelative Pitch: \n" + std::to_string(GetRelAnglePitch()) + "\nRelative Yaw: \n" + std::to_string(GetRelAngleYaw()) + "\nRelative Total: \n" + std::to_string(GetRelAngle()) + "\n-- Time Elapsed: " + std::to_string(TimeElapsed) + " --\n---------------------------------------\n";
+
+    }
+
 	// SUPPORTING FUNCTIONS
 
 	//"BoundValueSimple" bounds a given value by a given pair of boundaries
 	//Ex: An entered value of 200 with bounds of 180 will be returned as 20
-	long double BoundValueSimple(long double value, long double bound, bool isQuiet) {
+	double BoundValueSimple(double value, double bound, bool isQuiet) {
 
 		if (signbit(bound) == 1) { //Checking whether a negative value for the bounds was entered
 
@@ -1086,7 +1141,7 @@ public:
 
 	//"BoundValueCircular" bounds a given value by a given pair of boundaries, based off of the unit circle
 	//Ex: An entered value of 200 with bounds of 180 will be returned as -160
-	long double BoundValueCircular(long double value, long double bound, bool isQuiet) {
+	double BoundValueCircular(double value, double bound, bool isQuiet) {
 
 		if (signbit(bound) == 1) { //Checking whether a negative value for the bounds was entered
 
@@ -1094,17 +1149,16 @@ public:
 
 		}
 
-		if (value > bound) { //Checking whether the entered value is greater than 180 degrees
+		if (value > bound) { //Checking whether the entered value is greater than the bound
 
-			int multIdx = (value / bound); //If so, counting how many times it goes over 180 degrees
+			int multIdx = (value / bound); //If so, counting how many times it goes over the bound
 			value = bound - (value - (bound * multIdx)); //Obtaining the first new raw value
 
 			if ((multIdx % 2) != 0) { //Checking whether we are in the same sign area we started in
 
 				value = -(value); //If not, invert the sign value
 
-			}
-			else {
+			} else {
 
 				value = bound - value; //If so, push us into the final correct semicircle
 
@@ -1120,9 +1174,9 @@ public:
 
 			}
 
-		} else if (value < -(bound)) { //Checking whether the entered value is less than -180 degrees
+		} else if (value < -(bound)) { //Checking whether the entered value is less than the bound
 
-			int multIdx = (value / bound); //If so, counting how many times it goes under -180 degrees
+			int multIdx = (value / bound); //If so, counting how many times it goes under the bound
 			value = bound + (value - (bound * multIdx)); //Obtaining the first new raw value
 
 			if ((multIdx % 2) == 0) { //Checking whether we are in the same sign area we started in
@@ -1149,7 +1203,7 @@ public:
 	}
 
 	//"MetricToDegree" converts Carthesian coordinates of position or speed to Longitude-Lattitude degrees, given the planetary data
-	long double MetricToDegree(long double value, long double bound) {
+	double MetricToDegree(double value, double bound) {
 
 		return bound * (value / ((2 * M_PI * GetRadius()) / (180 / bound)));
 
@@ -1165,13 +1219,11 @@ public:
 
             return 2;
 
-        }
-        else if ((angle > 90) && (angle < 180)) {
+        } else if ((angle > 90) && (angle < 180)) {
 
             return 3;
 
-        }
-        else if ((angle < -90) && (angle > -180)) {
+        } else if ((angle < -90) && (angle > -180)) {
 
             return 4;
 
@@ -1189,19 +1241,48 @@ public:
 
             return 2;
 
-        }
-        else if ((x < 90) && (y < 0)) {
+        } else if ((x < 90) && (y < 0)) {
 
             return 3;
 
-        }
-        else if ((x > 0) && (y < 0)) {
+        } else if ((x > 0) && (y < 0)) {
 
             return 4;
 
         }
 
         return 1;
+
+    }
+
+    //"MultiplyMatrices" returns the resulting matrix from multiplying matrices
+    std::vector<vector<double>> MultiplyMatrices(std::vector<vector<double>> initialMatrix, std::vector<vector<double>> multMatrix, int initialCollumns, int finalRows) {
+
+        std::vector<vector<double>> finalMatrix;
+
+        finalMatrix.resize(finalRows);
+
+        for (int i = 0; i < finalMatrix.size(); i++) {
+            
+            finalMatrix[i].resize(1);
+
+        }
+
+        for (int i = 0; i < finalRows; ++i) {
+
+           double finalValue = 0;
+
+            for (int j = 0; j < initialCollumns; ++j) {
+
+                finalValue = finalValue + (initialMatrix[j][0] * multMatrix[i][j]);
+
+            }
+
+            finalMatrix[i][0] = finalValue;
+
+        }
+
+        return finalMatrix;
 
     }
 

@@ -9,16 +9,16 @@ using namespace std;
 
 int main() {
 
-    cout << "Vector Calculator Program\n";
+    cout << "Vector3D Calculator Program\n";
     cout << "Author(s): Svarun Soda";
 
-    long double input;
+    double input;
 
     cout << "\n\n\n";
 
     // INITIALIZING THE PAYLOAD VECTOR
 
-    Vector RocketVector;
+    Vector3D RocketVector;
 
     RocketVector.SetName("Payload");
     RocketVector.SetPosDegreeStatus(true);
@@ -49,11 +49,11 @@ int main() {
 
     // INITIALIZING THE PARTICLE VECTOR
 
-    Vector ParticleVector;
+    Vector3D ParticleVector;
 
     ParticleVector.SetName("Particle");
     ParticleVector.SetPosDegreeStatus(true);
-    cout << "Please input the Particle Vector Data:";
+    cout << "Please input the Particle Vector3D Data:";
     cout << "\nStart Point X: ";
     cin >> input;
     ParticleVector.SetStartX(input, false);
