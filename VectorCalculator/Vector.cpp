@@ -45,11 +45,11 @@ private:
     double angle_roll = 0;
     double angle_pitch = 0;
     double angle_yaw = 0;
-    double angle_rel_yaw = 0;
     double angle_rel_pitch = 0;
+    double angle_rel_yaw = 0;
     double angle_rel_total = 0;
-    double angle_target_yaw = 0;
     double angle_target_pitch = 0;
+    double angle_target_yaw = 0;
 
     // MISC VARIABLES
 
@@ -926,9 +926,9 @@ public:
 
     }
 
-    //"MoveVectorByLength" updates the start & end points of the vector by adding the current length values to them
+    //"MoveVector" updates the start & end points of the vector by adding the given length values to them
     //returns true if the start point changed, false if the start point remained the same
-    bool MoveVectorByLength() {
+    bool MoveVector(double moveX, double moveY, double moveZ) {
 
         bool changed = false; //Initializing the change tracker variable
 
@@ -936,20 +936,9 @@ public:
         double prevy1 = GetStartY(); //Initializing the store variable for the original Y component value
         double prevz1 = GetStartZ(); //Initializing the store variable for the original Z component value
 
-        if (GetPosDegreeStatus() == true) {
-
-            SetStartX(GetStartX() + MetricToDegree(GetLengthX(), 180), true); //Moving the X component of the start point by the X component of the length
-            SetStartZ(GetStartZ() + MetricToDegree(GetLengthZ(), 180), true); //Moving the Z component of the start point by the Z component of the length
-
-        }
-        else {
-
-            SetStartX(GetStartX() + GetLengthX(), true); //Moving the X component of the start point by the X component of the length
-            SetStartZ(GetStartZ() + GetLengthZ(), true); //Moving the Z component of the start point by the Z component of the length
-
-        }
-
-        SetStartY(GetStartY() + GetLengthY()); //Moving the Y component of the start point by the Y component of the length
+        SetStartX(GetStartX() + moveX, true); //Moving the X component of the start point by the X component of the length
+        SetStartY(GetStartY() + moveY); //Moving the Y component of the start point by the Y component of the length
+        SetStartZ(GetStartZ() + moveZ, true); //Moving the Z component of the start point by the Z component of the length
 
         if ((GetStartX() != prevx1) || (GetStartY() != prevy1) || (GetStartZ() != prevz1)) { //Checking whether the start point was changed
 
@@ -1036,9 +1025,9 @@ public:
 
     }
 
-    //"RotateVectorQuaternion" rotates the start and end points of the vector using Matrix methods given a set of Quaternion angles by which to rotate the vector
+    //"RotateVectorQuaternion" rotates the start and end points of the vector using the Hamilton product given the angle which to rotate by and an arbitrary vector about which the rotation will be performed
     //returns true if the start and end points were changed, false it the start and end points weren't changed
-    bool RotateVectorQuaternion(double rotW, double rotX, double rotY, double rotZ) {
+    bool RotateVectorQuaternion(double aboutX, double aboutY, double aboutZ, double angle) {
 
         bool changed = false;
 
@@ -1049,7 +1038,54 @@ public:
         double prevEndY = GetEndY();
         double prevEndZ = GetEndZ();
 
+        angle = angle * (M_PI / 180);
 
+        std::vector<vector<double>> initialQuaternions = {
+
+            {0, GetStartX(), GetStartY(), GetStartZ()},
+            {0, GetEndX(), GetEndY(), GetEndZ()}
+
+        };
+
+        std::vector<vector<double>> rotQuaternions = {
+
+            {cos(angle / 2), sin(angle / 2) * aboutX, sin(angle / 2) * aboutY, sin(angle / 2) * aboutZ},
+            {cos(angle / 2), -(sin(angle / 2) * aboutX), -(sin(angle / 2) * aboutY), -(sin(angle / 2) * aboutZ)}
+
+        };
+
+        std::vector<vector<double>> finalQuaternions = {
+
+            MultiplyQuaternions(MultiplyQuaternions(rotQuaternions[0], initialQuaternions[0]), rotQuaternions[1]),
+            MultiplyQuaternions(MultiplyQuaternions(rotQuaternions[0], initialQuaternions[1]), rotQuaternions[1])
+
+        };
+
+        for (int i = 0; i < 2; ++i) {
+
+            double valuesToAssign[3];
+
+            for (int j = 0; j < 3; ++j) {
+
+                valuesToAssign[j] = finalQuaternions[i][j + 1];
+
+            }
+
+            if (i == 0) {
+
+                SetStartX(valuesToAssign[0], true);
+                SetStartY(valuesToAssign[1]);
+                SetStartZ(valuesToAssign[2], true);
+
+            } else {
+
+                SetEndX(valuesToAssign[0], true);
+                SetEndY(valuesToAssign[1]);
+                SetEndZ(valuesToAssign[2], true);
+
+            }
+
+        }
 
         if ((GetStartX() != prevStartX) || (GetStartY() != prevStartY) || (GetStartZ() != prevStartZ) || (GetEndX() != prevEndX) || (GetEndY() != prevEndY) || (GetEndZ() != prevEndZ)) {
 
@@ -1087,9 +1123,9 @@ public:
 
 	}
 
-    std::string ToStringRadarLiveFeed(double CurrentRotation, double CurrentRotationSpeed, double TimeElapsed) {
+    std::string ToStringRadarLiveFeed(double CurrentRotation, double CurrentRotationSpeed, double TimeElapsed, int ParticleHits) {
 
-        return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\n-- Positional Values --\nStart point\nX: " + std::to_string(GetStartX()) + " Y: " + std::to_string(GetStartY()) + " Z: " + std::to_string(GetStartZ()) + "\nEnd point\nX: " + std::to_string(GetEndX()) + " Y: " + std::to_string(GetEndY()) + " Z: " + std::to_string(GetEndZ()) + "\nLength: " + std::to_string(GetLength()) + "\n-- Angular Values --\nCurrent Rotational Position: " + std::to_string(CurrentRotation) + "\nCurrent Rotational Speed: " + std::to_string(CurrentRotationSpeed) + "\nRoll:\n" + std::to_string(GetAngleRoll()) + "\nPitch:\n" + std::to_string(GetAnglePitch()) + "\nYaw:\n" + std::to_string(GetAngleYaw()) + "\n-- Relative Angular Values (with respect to " + GetOtherName() + ") --\nRelative Pitch: \n" + std::to_string(GetRelAnglePitch()) + "\nRelative Yaw: \n" + std::to_string(GetRelAngleYaw()) + "\nRelative Total: \n" + std::to_string(GetRelAngle()) + "\n-- Time Elapsed: " + std::to_string(TimeElapsed) + " --\n---------------------------------------\n";
+        return "\n" + GetName() + " Vector Live Data Report\n---------------------------------------\n-- Positional Values --\nStart point\nX: " + std::to_string(GetStartX()) + " Y: " + std::to_string(GetStartY()) + " Z: " + std::to_string(GetStartZ()) + "\nEnd point\nX: " + std::to_string(GetEndX()) + " Y: " + std::to_string(GetEndY()) + " Z: " + std::to_string(GetEndZ()) + "\nLength: " + std::to_string(GetLength()) + "\n-- Angular Values --\nCurrent Rotational Position: " + std::to_string(CurrentRotation) + "\nCurrent Rotational Speed: " + std::to_string(CurrentRotationSpeed) + "\nRoll:\n" + std::to_string(GetAngleRoll()) + "\nPitch:\n" + std::to_string(GetAnglePitch()) + "\nYaw:\n" + std::to_string(GetAngleYaw()) + "\n-- Relative Angular Values (with respect to " + GetOtherName() + ") --\nRelative Pitch: \n" + std::to_string(GetRelAnglePitch()) + "\nRelative Yaw: \n" + std::to_string(GetRelAngleYaw()) + "\nRelative Total: \n" + std::to_string(GetRelAngle()) + "\n-- Time Elapsed: " + std::to_string(TimeElapsed) + "\n-- Particle Hits: " + std::to_string(ParticleHits) + " --\n---------------------------------------\n";
 
     }
 
@@ -1255,7 +1291,7 @@ public:
 
     }
 
-    //"MultiplyMatrices" returns the resulting matrix from multiplying matrices
+    //"MultiplyMatrices" returns the resulting matrix from multiplying two matrices
     std::vector<vector<double>> MultiplyMatrices(std::vector<vector<double>> initialMatrix, std::vector<vector<double>> multMatrix, int initialCollumns, int finalRows) {
 
         std::vector<vector<double>> finalMatrix;
@@ -1283,6 +1319,22 @@ public:
         }
 
         return finalMatrix;
+
+    }
+
+    //"MultiplyQuaternions" returns the resulting quaternion array from multiplying two quaternion arrays (Hamilton product)
+    std::vector<double> MultiplyQuaternions(std::vector<double> quaternionA, std::vector<double> quaternionB) {
+
+        std::vector<double> finalQuaternion = {
+
+            (quaternionA[0] * quaternionB[0]) - (quaternionA[1] * quaternionB[1]) - (quaternionA[2] * quaternionB[2]) - (quaternionA[3] * quaternionB[3]),
+            (quaternionA[0] * quaternionB[1]) + (quaternionA[1] * quaternionB[0]) + (quaternionA[2] * quaternionB[3]) - (quaternionA[3] * quaternionB[2]),
+            (quaternionA[0] * quaternionB[2]) - (quaternionA[1] * quaternionB[3]) + (quaternionA[2] * quaternionB[0]) + (quaternionA[3] * quaternionB[1]),
+            (quaternionA[0] * quaternionB[3]) + (quaternionA[1] * quaternionB[2]) - (quaternionA[2] * quaternionB[1]) + (quaternionA[3] * quaternionB[0])
+
+        };
+
+        return finalQuaternion;
 
     }
 
